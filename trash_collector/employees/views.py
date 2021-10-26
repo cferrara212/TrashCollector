@@ -27,15 +27,17 @@ def index(request):
         days_customers = Customer.objects.filter(weekly_pickup = day_of_week)
         customers_on_route = days_customers.filter(zip_code = logged_in_employee.route_zip)
         customers_not_suspended = customers_on_route.exclude(suspend_start__lt = curr_date, suspend_end__gt = curr_date)
+        customers_to_pickup = customers_not_suspended.exclude(date_of_last_pickup = curr_date)
         one_time_pickup = Customer.objects.filter(one_time_pickup = curr_date)
+        one_time_pickup_final = one_time_pickup.exclude(date_of_last_pickup = curr_date)
         
         
         context = {
             'logged_in_employee':logged_in_employee,
             'curr_date': curr_date,
             'day_of_week': day_of_week,
-            'customers_not_suspended': customers_not_suspended,
-            'one_time_pickup': one_time_pickup,
+            'customers_to_pickup': customers_to_pickup,
+            'one_time_pickup_final': one_time_pickup_final,
         }
         
         return render(request, 'employees/index.html',context)
@@ -79,11 +81,29 @@ def edit_profile(request):
         return render(request, 'employees/edit_profile.html', context)
 
 @login_required
-def confirm(request):
-    logged_in_user=request.user
-    logged_in_employee = Employee.object.get(user=logged_in_user)
+def schedule(request):
+    logged_in_user = request.user
+    logged_in_employee = Employee.objects.get(user = logged_in_user)
+    context = {
+            'logged_in_employee': logged_in_employee,
+        }
+    
+    return render(request, 'employees/schedule.html', context)
+
+@login_required
+def confirm(request,customer_id):
+    logged_in_user = request.user
+    logged_in_employee = Employee.objects.get(user=logged_in_user)
+    curr_date = date.today()
+    Customer = apps.get_model('customers.Customer')
+    this_customer = Customer.objects.get(pk = customer_id)
+    this_customer.date_of_last_pickup=curr_date
+    this_customer.balance += 20
+    this_customer.save()
     context = {
         'logged_in_employee': logged_in_employee
     }
+   
+    return HttpResponseRedirect(reverse('employees:index'))
 
     

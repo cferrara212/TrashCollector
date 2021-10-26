@@ -24,15 +24,22 @@ def index(request):
         Customer = apps.get_model('customers.Customer')
         curr_date = date.today()
         day_of_week = calendar.day_name[curr_date.weekday()]
-        todays_customers = Customer.objects.filter(weekly_pickup = day_of_week, )
+        days_customers = Customer.objects.filter(weekly_pickup = day_of_week)
+        customers_on_route = days_customers.filter(zip_code = logged_in_employee.route_zip)
+        customers_not_suspended = customers_on_route.exclude(suspend_start__lt = curr_date, suspend_end__gt = curr_date)
+        one_time_pickup = Customer.objects.filter(one_time_pickup = curr_date)
+        
+        
         context = {
             'logged_in_employee':logged_in_employee,
             'curr_date': curr_date,
             'day_of_week': day_of_week,
-            'todays_customers': todays_customers,
+            'customers_not_suspended': customers_not_suspended,
+            'one_time_pickup': one_time_pickup,
         }
         
         return render(request, 'employees/index.html',context)
+
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse('employees:create'))
 
@@ -46,7 +53,37 @@ def create(request):
         route_from_form = request.POST.get('route_zip')
         new_employee = Employee(name=name_from_form, user=logged_in_user, address=address_from_form, zip_code=zip_from_form, route_zip=route_from_form)
         new_employee.save()
-        return HttpResponseRedirect(reverse('customers:index'))
+        return HttpResponseRedirect(reverse('employees:index'))
     else:
-        return render(request, 'customers/create.html')
+        return render(request, 'employees/create.html')
+
+@login_required
+def edit_profile(request):
+    logged_in_user = request.user
+    logged_in_employee = Employee.objects.get(user=logged_in_user)
+    if request.method == "POST":
+        name_from_form = request.POST.get('name')
+        address_from_form = request.POST.get('address')
+        zip_from_form = request.POST.get('zip_code')
+        route_from_form = request.POST.get('route_zip')
+        logged_in_employee.name = name_from_form
+        logged_in_employee.address = address_from_form
+        logged_in_employee.zip_code = zip_from_form
+        logged_in_employee.route_zip = route_from_form
+        logged_in_employee.save()
+        return HttpResponseRedirect(reverse('employees:index'))
+    else:
+        context = {
+            'logged_in_employee': logged_in_employee
+        }
+        return render(request, 'employees/edit_profile.html', context)
+
+@login_required
+def confirm(request):
+    logged_in_user=request.user
+    logged_in_employee = Employee.object.get(user=logged_in_user)
+    context = {
+        'logged_in_employee': logged_in_employee
+    }
+
     

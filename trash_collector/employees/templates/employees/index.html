@@ -1,6 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'employees/employees_base.html' %}
 
-{% block title %}{% block header %} Employee Home {% endblock %}{% endblock %}
+{% block title %}Employee Home{% endblock %}
+{% block header %} Employee Portal {% endblock %}
 
 {% block content %}
   {% if user.is_authenticated %}
@@ -12,11 +13,23 @@
         <p>{{day_of_week}},{{curr_date}}</p>
         
       </ul>
+
     <h2>Todays Pickups</h2>
       <ul>
-        {% for customer in todays_customers %}
-           <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}</li>
+        {% for customer in customers_not_suspended %}
+           <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}
+               <button type="button">Confirm Pickup</button>
+           </li>
         {% endfor %}
+      </ul>
+
+    <h2>One Time Pickups</h2>  
+      <ul>  
+        {% for customer in one_time_pickup %}
+           <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}
+            <button type="button">Confirm Pickup</button>
+           </li>
+        {% endfor %}   
       </ul>  
   {% else %}
     <p>You are at the employee index, but you are not logged in.</p>

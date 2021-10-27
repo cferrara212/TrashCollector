@@ -5,10 +5,11 @@
 
 {% block content %}
   {% if user.is_authenticated %}
-    Hello Employee {{ user.username }}!<br>
+    Hello {{ logged_in_employee.name }}!<br>
     <br>
     <br>
-    <h3>Today is</h3><br>
+    <h3>Today is</h3>
+    <br />
       <ul>
         <p>{{day_of_week}},{{curr_date}}</p>
         
@@ -18,7 +19,7 @@
       <ul>
         {% for customer in customers_to_pickup %}
            <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}
-               <button type="button">Confirm Pickup</button>
+            <a href="{% url 'employees:confirm' customer.id %}"><button type="button">Confirm Pickup</button></a>
            </li>
         {% endfor %}
       </ul>
@@ -27,10 +28,14 @@
       <ul>  
         {% for customer in one_time_pickup_final %}
            <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}
-            <a href="{% url 'employees:confirm' customer.id %}"><button type="button">Confirm Pickup</button></a>
+             <a href="{% url 'employees:confirm' customer.id %}"><button type="button">Confirm Pickup</button></a>
            </li>
         {% endfor %}   
-      </ul>  
+      </ul> 
+      <br />
+      <br />
+    <h2></h2>
+
   {% else %}
     <p>You are at the employee index, but you are not logged in.</p>
     <a href="{% url 'login' %}">Log In</a>

@@ -10,5 +10,6 @@ urlpatterns = [
     path('new/', views.create, name="create"),
     path('edit_profile/', views.edit_profile, name="edit_profile"),
     path('schedule/', views.schedule, name="schedule"),
+    path('schedule_details', views.schedule_details, name='schedule_details'),
     path('confirm/<int:customer_id>/', views.confirm, name="confirm")
 ]

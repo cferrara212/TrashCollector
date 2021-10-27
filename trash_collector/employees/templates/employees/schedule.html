@@ -1,10 +1,22 @@
 {% extends 'employees/employees_base.html' %}
 
-{% block title %} Employee Profile Edit {% endblock %}
+{% block title %} {% endblock %}
 
-{% block header %} Update Your Information {% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
-
-<h1>space for schedule</h1>
+<form action="{% url 'employees:schedule' %}" method="post">
+    {% csrf_token %}
+    <label for="day">Choose a day:</label>
+        <select id="day" name="day">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>
+    <input type="submit">
+</form>
 {% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'employees/employees_base.html' %}
+
+{% block title %} {% endblock %}
+
+{% block header %} {% endblock %}
+
+{% block content %}
+<h2>These are all regular {{day_from_form}} Pickups On Your Route</h2>
+<br />
+<br />
+  <ul>
+    {% for customer in days_customers_final %}
+     <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}</li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

@@ -29,7 +29,8 @@ def index(request):
         customers_not_suspended = customers_on_route.exclude(suspend_start__lt = curr_date, suspend_end__gt = curr_date)
         customers_to_pickup = customers_not_suspended.exclude(date_of_last_pickup = curr_date)
         one_time_pickup = Customer.objects.filter(one_time_pickup = curr_date)
-        one_time_pickup_final = one_time_pickup.exclude(date_of_last_pickup = curr_date)
+        one_time_in_route = one_time_pickup.filter(zip_code = logged_in_employee.route_zip)
+        one_time_pickup_final = one_time_in_route.exclude(date_of_last_pickup = curr_date)
         
         
         context = {
@@ -83,12 +84,27 @@ def edit_profile(request):
 @login_required
 def schedule(request):
     logged_in_user = request.user
-    logged_in_employee = Employee.objects.get(user = logged_in_user)
-    context = {
-            'logged_in_employee': logged_in_employee,
+    logged_in_employee = Employee.objects.get(user=logged_in_user)
+    if request.method == "POST":
+        day_from_form = request.POST.get('day')
+        Customer = apps.get_model('customers.Customer')
+        days_customers = Customer.objects.filter(weekly_pickup = day_from_form)
+        days_customers_final = days_customers.filter(zip_code = logged_in_employee.route_zip)
+        context = {
+            'day_from_form': day_from_form,
+            'days_customers_final': days_customers_final
         }
+        return render(request, 'employees/schedule_details.html', context)
+     
+    else:
+        return render(request, 'employees/schedule.html')
+
+
+@login_required
+def schedule_details(request):
     
-    return render(request, 'employees/schedule.html', context)
+    return render(request, 'employees/schedule_details.html')
+
 
 @login_required
 def confirm(request,customer_id):

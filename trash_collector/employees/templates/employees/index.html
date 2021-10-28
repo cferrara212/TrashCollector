@@ -19,7 +19,7 @@
       <ul>
         {% for customer in customers_to_pickup %}
            <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}
-            <a href="{% url 'employees:confirm' customer.id %}"><button type="button">Confirm Pickup</button></a>
+            <a href="{% url 'employees:confirm' customer.id %}"><button type="button" class="btn btn-success">Confirm Pickup</button></a>
            </li>
         {% endfor %}
       </ul>
@@ -28,7 +28,7 @@
       <ul>  
         {% for customer in one_time_pickup_final %}
            <li>{{customer.name}} - {{customer.address}},{{customer.zip_code}}
-             <a href="{% url 'employees:confirm' customer.id %}"><button type="button">Confirm Pickup</button></a>
+             <a href="{% url 'employees:confirm' customer.id %}"><button type="button" class="btn btn-success">Confirm Pickup</button></a>
            </li>
         {% endfor %}   
       </ul> 
